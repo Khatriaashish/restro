@@ -5,4 +5,17 @@ const registerSchema = z.object({
     email: z.string().email()
 })
 
-module.exports = {registerSchema}
+const passwordSchema = z.object({
+    password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/),
+    confirmPassword: z.string().min(1)
+}).refine((data)=>data.password===data.confirmPassword, {
+    message: "Password and confirm password doesn't match",
+    path: "confirmPassword"
+})
+
+const loginSchema = z.object({
+    email: z.string().min(1),
+    password: z.string().min(1)
+})
+
+module.exports = {registerSchema, passwordSchema, loginSchema}

@@ -1,8 +1,10 @@
 const router = require('express').Router();
+const checkLogin = require('../../middlewares/auth.middleware');
+const checkPermission = require('../../middlewares/rbac.middleware');
 const uploader = require('../../middlewares/uploader.middleware');
 const validateRequest = require('../../middlewares/validate.request');
 const authCtrl = require('../auth/auth.controller');
-const { registerSchema } = require('./auth.validator');
+const { registerSchema, passwordSchema, loginSchema } = require('./auth.validator');
 
 
 const dirSetup = (req, res, next)=>{
@@ -12,5 +14,9 @@ const dirSetup = (req, res, next)=>{
 //api
 router.post('/register', dirSetup, uploader.single('image'), validateRequest(registerSchema), authCtrl.register);
 router.get('/verify-token/:token', authCtrl.verifyToken);
-router.post('/set-password/:token', authCtrl.setPassword);
+router.post('/set-password/:token', validateRequest(passwordSchema), authCtrl.setPassword);
+
+router.post('/login', validateRequest(loginSchema), authCtrl.login);
+router.get('/me', checkLogin, checkPermission(['admin', 'kitchen']), (req, res, next)=>{ res.json({result: req.authUser})})
+router.post('/logout', checkLogin, authCtrl.logout);
 module.exports = router

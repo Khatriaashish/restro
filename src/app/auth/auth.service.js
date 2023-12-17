@@ -1,4 +1,5 @@
-const UserModel = require("../user/user.model")
+const UserModel = require("../user/user.model");
+const PatModel = require("./pat.model");
 
 class AuthService{
     payloadStore = async(payload)=>{
@@ -27,6 +28,39 @@ class AuthService{
         }
         catch(except){
             throw except;
+        }
+    }
+
+    patStore = async(data)=>{
+        try{
+            let pat = new PatModel(data);
+            let response = await pat.save();
+            return response;
+        }
+        catch(except){
+            next(except)
+        }
+    }
+
+    getPATByFilter = async(filter)=>{
+        try{
+            let response = await PatModel.findOne(filter);
+            return response;
+        }
+        catch(except){
+            throw except;
+        }
+    }
+
+    deletePAT = async(userId)=>{
+        try{
+            let response = await PatModel.deleteOne({userId: userId});
+            if(!response)
+                next({code: 400, message: "Already Logged out"})
+            return response
+        }
+        catch(except){
+            next(except);
         }
     }
 }

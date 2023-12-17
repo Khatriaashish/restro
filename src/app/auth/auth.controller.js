@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const AuthRequest = require('./auth.request');
 const authSvc = require('./auth.service');
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 dotenv.config()
 
 class AuthController{
@@ -82,6 +83,73 @@ class AuthController{
         }
     }
 
+    login = async(req, res, next)=>{
+        try{
+            let credentials = req.body;
+            let userDetail = await authSvc.getUserByFilter({email: credentials.email});
+            if(userDetail){
+                if(userDetail.token === null && userDetail.status === 'active'){
+                    if(bcrypt.compareSync(credentials.password, userDetail.password)){
+                        let token = jwt.sign({
+                            userId: userDetail._id
+                        }, process.env.JWT_SECRET, {
+                            expiresIn: '1h'
+                        })
+
+                        let refreshToken = jwt.sign({
+                            userId: userDetail._id
+                        }, process.env.JWT_SECRET, {
+                            expiresIn: '1d'
+                        })
+
+                        let patdata = {
+                            userId: userDetail._id,
+                            token: token,
+                            refreshToken: refreshToken
+                        }
+
+                        let response = await authSvc.patStore(patdata);
+
+                        res.json({
+                            result: {
+                                token: token,
+                                type: "Bearer"
+                            },
+                            message: "User logged in successfully"
+                        })
+                    }
+                    else{
+                        next({code: 401, message: "Credentials doesn't match"})
+                    }
+                }
+                else{
+                    next({code: 401, message: "Activate your account first"})
+                }
+            }
+            else{
+                next({code: 401, message: "User doesn't exist"})
+            }
+        }
+        catch(except){
+            next(except)
+        }
+    }
+
+    logout = async(req, res, next)=>{
+        try{
+            let userId = req.authUser._id;
+            let logout = await authSvc.deletePAT(userId);
+
+            res.json({
+                result: logout,
+                message: "Logged Out Successfully",
+                meta: null
+            })
+        }
+        catch(except){
+            next(except);
+        }
+    }
 }
 
 const authCtrl = new AuthController()
