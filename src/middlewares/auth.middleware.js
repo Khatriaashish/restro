@@ -32,6 +32,9 @@ const checkLogin = async(req, res, next)=>{
                         req.authUser = userDetail;
                         next()
                     }
+                    else{
+                        next({code: 401, message: "User doesn't exist anymore"})
+                    }
                 }
                 else{
                     next({code: 401, message: "Token Expired"})
@@ -41,7 +44,7 @@ const checkLogin = async(req, res, next)=>{
 
     }
     catch(except){
-        throw except
+        next({code: 401, message: except.message})
     }
 }
 

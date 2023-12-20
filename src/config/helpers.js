@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 const generateRandomNumber = (len = 100) => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let random = '';
@@ -8,4 +10,10 @@ const generateRandomNumber = (len = 100) => {
     return random;
 }
 
-module.exports = {generateRandomNumber}
+const deleteFile = (path, filename)=>{
+    if(fs.existsSync(path+filename)){
+        fs.unlinkSync(path+filename)
+    }
+}
+
+module.exports = {generateRandomNumber, deleteFile}

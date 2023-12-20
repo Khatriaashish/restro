@@ -13,7 +13,7 @@ const UserDefScehma = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'kitchen', 'customer', 'waiter'],
+        enum: ['admin', 'kitchen', 'customer', 'waiter', 'reception'],
         default: 'customer'
     },
     image: String,
