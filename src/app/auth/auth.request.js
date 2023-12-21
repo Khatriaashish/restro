@@ -1,4 +1,4 @@
-const { generateRandomNumber } = require("../../config/helpers");
+const { generateRandomString } = require("../../config/helpers");
 
 class AuthRequest{
     body;
@@ -14,7 +14,7 @@ class AuthRequest{
         }
         payload.image = this.file.filename;
         payload.status = 'inactive';
-        payload.token = generateRandomNumber();
+        payload.token = generateRandomString();
 
         return payload;
     }

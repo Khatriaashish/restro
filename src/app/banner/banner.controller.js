@@ -83,7 +83,7 @@ class BannerController{
             if(content){
                 
                 let data = (new BannerRequest(req)).editBannerTransform(content.image);
-                let update = await bannerSvc.update({_id: req.params.id}, data);
+                let update = await bannerSvc.update(req.params.id, data);
                 if(content.image !== data.image){
                     deleteFile('./public/uploads/banner/', content.image)
                 }

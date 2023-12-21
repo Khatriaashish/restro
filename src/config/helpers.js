@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const generateRandomNumber = (len = 100) => {
+const generateRandomString = (len = 100) => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let random = '';
     for(let i = 1; i<=len; i++){
@@ -10,10 +10,15 @@ const generateRandomNumber = (len = 100) => {
     return random;
 }
 
+const generateRandomNumber = (limit, lower = 0)=>{
+    let posn = Math.ceil(lower + (Math.random()*limit));
+    return posn
+}
+
 const deleteFile = (path, filename)=>{
     if(fs.existsSync(path+filename)){
         fs.unlinkSync(path+filename)
     }
 }
 
-module.exports = {generateRandomNumber, deleteFile}
+module.exports = {generateRandomString, generateRandomNumber, deleteFile}

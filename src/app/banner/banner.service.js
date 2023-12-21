@@ -50,9 +50,9 @@ class BannerService{
         }
     }
 
-    update = async(filter, data) =>{
+    update = async(id, data) =>{
         try{
-            let update = await BannerModel.updateOne(filter, data);
+            let update = await BannerModel.findByIdAndUpdate(id, data);
             return update
         }
         catch(except){

@@ -4,7 +4,7 @@ const AuthRequest = require('./auth.request');
 const authSvc = require('./auth.service');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
-const { generateRandomNumber } = require('../../config/helpers');
+const { generateRandomString } = require('../../config/helpers');
 dotenv.config()
 
 class AuthController{
@@ -189,7 +189,7 @@ class AuthController{
         try{
             let email = req.body.email;
             let userDetail = await authSvc.getUserByFilter({email: email});
-            let resetToken = generateRandomNumber()
+            let resetToken = generateRandomString()
             if(userDetail){
                 let updateData = {
                     resetToken: resetToken,

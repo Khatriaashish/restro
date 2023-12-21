@@ -38,10 +38,13 @@ app.use((err, req, res, next)=>{
     //zod exception
     if(err instanceof ZodError){
         code = 400;
-        let msg = {};
-        msg = err.errors.map((item)=>msg[item.path[0]]=item.message)
-        result = msg
-        message = "Validation Failure"
+        let msg = {}
+
+        err.errors.map((err)=>{
+            msg[err.path[0]] = err.message;
+        })
+        message = "Validation Failure";
+        result = msg;
     }   
 
     //mongodb exception
