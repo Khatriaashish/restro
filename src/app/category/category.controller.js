@@ -5,7 +5,6 @@ const categorySvc = require("./category.service");
 class CategoryController{
     createCategory = async(req, res, next)=>{
         try{
-            console.log("here");
             let data = (new CategoryRequest(req)).createCategoryTransform(req);
             data.slug = await categorySvc.checkSlug(data.slug)
 
@@ -43,8 +42,8 @@ class CategoryController{
                 ]
             }
 
-            let page = req.query['page'] || 1;
-            let limit = req.query['limit'] || 10;
+            let page = +req.query['page'] || 1;
+            let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
 
             let category = await categorySvc.getByFilter(filter, {skip: skip, limit: limit});
@@ -146,8 +145,8 @@ class CategoryController{
                 ]
             }
 
-            let page = req.query['page'] || 1;
-            let limit = req.query['limit'] || 10;
+            let page = +req.query['page'] || 1;
+            let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
             
             let categorys = await categorySvc.getByFilter(filter, {skip: skip, limit: limit}, {_id: 'desc'});
@@ -160,7 +159,7 @@ class CategoryController{
             })
         }
         catch(except){
-            nect(except);
+            next(except);
         }
     }
 
@@ -168,14 +167,57 @@ class CategoryController{
         try{
             let detail = await categorySvc.getBySlug({slug: req.params.slug, status: 'active'});
 
+            let foodFilter = [
+                {category: {$in: detail._id, $nin: null}},
+                {status: 'active'}
+            ]
+
+            if(req.query['search']){
+                foodFilter = {
+                    $and: [
+                        {...foodFilter},
+                        {
+                            $or: [
+                                {title: new RegExp(req.query['search'], 'i')},
+                                {description: new RegExp(req.query['search'], 'i')},
+                                {tag: new RegExp(req.query['search'], 'i')},
+                            ] 
+                        }
+                    ]
+                }
+            }
+            else{
+                foodFilter = {
+                    $and: [
+                        ...foodFilter
+                    ]
+                }
+            }
+
+            let page = +req.query['page'] || 1;
+            let limit = +req.query['limit'] || 10;
+            let skip = (page-1)*limit;
+
+            let sort = {_id: "desc", title: "asc"}
+            if(req.query.sort){
+                let sortsplit = req.query.sort.split(',');
+                sort = {[sortsplit[0]]: sortsplit[1]}
+            }
+
+            const food = await foodSvc.getByFilter(foodFilter, {limit, skip}, sort);
+
             //food 
             res.json({
                 result: {
                     detail: detail,
-                    food: null
+                    food: food
                 },
                 message: "Category detail from slug fetched",
-                meta: null
+                meta: {
+                    total: await categorySvc.count(),
+                    page: page,
+                    limit: limit
+                }
             })
         }
         catch(except){

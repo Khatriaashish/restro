@@ -43,8 +43,8 @@ class BannerController{
                 ]
             }
 
-            let page = req.query['page'] || 1;
-            let limit = req.query['limit'] || 10;
+            let page = +req.query['page'] || 1;
+            let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
 
             let banner = await bannerSvc.getByFilter(filter, {skip: skip, limit: limit});
@@ -146,8 +146,8 @@ class BannerController{
                 ]
             }
 
-            let page = req.query['page'] || 1;
-            let limit = req.query['limit'] || 10;
+            let page = +req.query['page'] || 1;
+            let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
             
             let banners = await bannerSvc.getByFilter(filter, {skip: skip, limit: limit}, {_id: 'desc'});
