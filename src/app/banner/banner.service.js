@@ -7,7 +7,7 @@ class BannerService{
             return await banner.save()
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -46,7 +46,7 @@ class BannerService{
             return count;
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -56,7 +56,7 @@ class BannerService{
             return update
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -66,7 +66,7 @@ class BannerService{
             return deleted
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 }

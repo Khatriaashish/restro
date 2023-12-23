@@ -29,7 +29,7 @@ const foodDefSchema = new mongoose.Schema({
         unique: true
     },
     descrition: String,
-    image: [{
+    images: [{
         type: String,
         required: true
     }],
@@ -52,7 +52,10 @@ const foodDefSchema = new mongoose.Schema({
         type: Number,
         min: 1
     },
-    tags: [String],
+    tags: [{
+        type: String,
+        trim: true
+    }],
     createdBy: {
         type: mongoose.Types.ObjectId,
         ref: "User",

@@ -8,7 +8,7 @@ class FoodService{
             return await food.save()
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -66,7 +66,7 @@ class FoodService{
             return count;
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -76,7 +76,7 @@ class FoodService{
             return update
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -86,7 +86,7 @@ class FoodService{
             return deleted
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -101,7 +101,7 @@ class FoodService{
             return response
         }
         catch(except){
-            next(except);
+            throw except;
         }
     }
 }

@@ -29,7 +29,10 @@ class FoodRequest {
             if (!data.category || data.category === 'null' || data.category === '')
                 data.category = null;
 
-            data.afterDiscount = data.price - data.price * data.afterDiscount / 100;
+
+            data.afterDiscount = data.price - data.price * data.discount / 100;
+
+            data.tags = data.tags.split(',')
 
             return data;
         }
@@ -56,7 +59,9 @@ class FoodRequest {
             if (!data.category || data.category === 'null' || data.category === '')
                 data.category = null;
 
-            data.afterDiscount = data.price - data.price * data.afterDiscount / 100;
+            data.afterDiscount = data.price - data.price * data.discount / 100;
+
+            data.tags = data.tags.split(',')
             return data;
         }
         catch (except) {

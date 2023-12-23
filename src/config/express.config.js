@@ -4,6 +4,7 @@ const router = require('../routes/');
 const { MulterError } = require('multer');
 const { ZodError } = require('zod');
 require('./db.config')
+require('./defaultadmin.config')
 
 //bodyparse
 app.use(express.json());
@@ -50,7 +51,7 @@ app.use((err, req, res, next)=>{
     //mongodb exception
     if(err.code === 11000){
         code = 400;
-        let uniqueKeys = Object.keys(error.keyPattern)
+        let uniqueKeys = Object.keys(err.keyPattern)
         let msgbody = uniqueKeys.map((key)=>{
             return{
                 [key]: key + ' should be unique'
@@ -67,6 +68,9 @@ app.use((err, req, res, next)=>{
         meta: null
     })
 })
+
+
+
 
 
 module.exports = app;

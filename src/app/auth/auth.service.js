@@ -38,7 +38,7 @@ class AuthService{
             return response;
         }
         catch(except){
-            next(except)
+            throw except
         }
     }
 
@@ -60,7 +60,7 @@ class AuthService{
             return response
         }
         catch(except){
-            next(except);
+            throw except;
         }
     }
 }

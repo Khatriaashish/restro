@@ -28,6 +28,7 @@ class CategoryRequest{
             if(!this.body.parentId || this.body.parentId === 'null' || this.body.parentId === '')
                 data.parentId = null;
 
+
             return data;
         }
         catch(except){
@@ -48,6 +49,7 @@ class CategoryRequest{
 
             if(!this.body.parentId || this.body.parentId === 'null' || this.body.parentId === '')
                 data.parentId = null;
+
 
             return data;
         }

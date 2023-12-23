@@ -45,8 +45,13 @@ class FoodController{
             let page = +req.query['page'] || 1;
             let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
+            let sort = {category: "desc", title: "asc"};
+            if(req.query.sort){
+                let sortsplit = req.query['sort'].split(',');
+                sort = {[sortsplit[0]]:sortsplit[1]};
+            }
 
-            let food = await foodSvc.getByFilter(filter, {skip: skip, limit: limit});
+            let food = await foodSvc.getByFilter(filter, {skip: skip, limit: limit}, sort);
             res.json({
                 result: food,
                 message: "Foods fetched",
@@ -83,9 +88,11 @@ class FoodController{
                 
                 let data = (new FoodRequest(req)).editFoodTransform(content);
                 let update = await foodSvc.update(req.params.id, data);
-                req.delImages.map((img)=>{
-                    deleteFile('./public/uploads/food/', img.filename);
-                })
+                if(req.delImages)
+                    req.delImages.map((img)=>{
+                        console.log('here')
+                        deleteFile('./public/uploads/food/', img);
+                    })
                 res.json({
                     result: update,
                     message: "Food Updated Successfully",
@@ -107,8 +114,9 @@ class FoodController{
             let content = req.content;
             if(content){
                 let deleted = await foodSvc.delete(req.params.id)
-                req.delImages.map((img)=>{
-                    deleteFile('./public/uploads/food/', img.filename);
+                console.log(content.images);
+                content.images.map((img)=>{
+                    deleteFile('./public/uploads/food/', img);
                 })
                 res.json({
                     result: deleted,
@@ -150,8 +158,14 @@ class FoodController{
             let page = +req.query['page'] || 1;
             let limit = +req.query['limit'] || 10;
             let skip = (page-1)*limit;
+
+            let sort = {category: "desc", title: "asc"};
+            if(req.query.sort){
+                let sortsplit = req.query['sort'].split(',');
+                sort = {[sortsplit[0]]:sortsplit[1]};
+            }
             
-            let foods = await foodSvc.getByFilter(filter, {skip: skip, limit: limit}, {_id: 'desc'});
+            let foods = await foodSvc.getByFilter(filter, {skip: skip, limit: limit}, sort);
             res.json({
                 result: foods,
                 message: "All active foods fetched",
@@ -220,7 +234,7 @@ class FoodController{
 
             const alreadyReviewed = content.reviews.map((review)=>review.user.toString() === req.authUser._id.toString()).pop();
             if(alreadyReviewed){
-                next({code: 400, message: "Product already reviewed"});
+                next({code: 400, message: "Food already reviewed"});
             }
 
             const reviews = {
@@ -239,7 +253,7 @@ class FoodController{
                 rating: rating
             }
 
-            let response = await ProductModel.updateOne({_id: id}, updataData);
+            let response = await FoodModel.updateOne({_id: id}, updateData);
             res.json({
                 result: response,
                 message: "Reviewed",

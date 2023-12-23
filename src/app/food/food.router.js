@@ -5,7 +5,7 @@ const uploader = require('../../middlewares/uploader.middleware')
 const validateRequest = require('../../middlewares/validate.request')
 const foodCtrl = require('./food.controller')
 const foodSvc = require('./food.service')
-const { foodCreateSchema } = require('./food.validator')
+const { foodCreateSchema, reviewSchema } = require('./food.validator')
 
 const router = require('express').Router()
 
@@ -35,7 +35,7 @@ router.route('/')
         foodCtrl.listAllFood)
 
 //for food reviews
-router.post('/:id/reviews', checkLogin, checkPermission('customer'), check-checkAccess(foodSvc), foodCtrl.createReview);
+router.post('/:id/reviews', checkLogin, checkPermission('customer'), checkAccess(foodSvc), validateRequest(reviewSchema), foodCtrl.createReview);
 
 router.route('/:id')
     //read one  
