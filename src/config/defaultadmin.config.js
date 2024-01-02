@@ -15,7 +15,7 @@ const createDefaultAdmin = async ()=>{
         }
         let admin = new UserModel(payload);
         admin.save()
-            .then((success)=>{console.log("Default admin created. Use default credentials provided by the developers.")})
+            .then((success)=>{console.log("Default admin created. Use credentials set in your environment")})
             .catch((err)=>{
                 console.log("Trouble creating default admin. Try restarting the server")
                 process.exit(1)
