@@ -4,12 +4,15 @@ const orderSvc = require('./order.service');
 class OrderController{
     placeOrder = async(req, res, next)=>{
         try{
-            const food = req.body.foodId;
+            const foodId = req.body.foodId;
             const qty = req.body.qty;
             const user = req.authUser._id;
+            const food = await foodSvc.getById({_id: foodId})
+            console.log(food)
             const order = (new OrderRequest()).transformSelection(food, user, qty);
+
             const existingOrder = await orderSvc.checkOrder(food, user);
-            const response = await orderSvc.upsertOrder(existingOrder, order);
+            const response = await orderSvc.createOrder(order);
             res.json({
                 result: response,
                 message: "Your ordered has been placed successfully"
@@ -24,7 +27,7 @@ class OrderController{
         try{
             const order = await orderSvc.getByFilter({status: 'new'});
             res.json({
-                result: response,
+                result: order,
                 message: "List of new orders"
             })
         }
@@ -37,16 +40,30 @@ class OrderController{
         try{
             const orderId = req.params.orderId;
             const order = await orderSvc.getById({_id: orderId});
+            console.log(order)
             if(order.status !== "new"){
                 next({code: 415, message: "Order has already been processed"})
             }
             else{
                 const update = await orderSvc.updateOrderStatus(orderId, 'cooking');
                 res.json({
-                    result: response,
+                    result: update,
                     message: "Order is being cooked"
                 })
             }
+        }
+        catch(except){
+            next(except);
+        }
+    }
+
+    getCookingOrder = async(req, res, next)=>{
+        try{
+            const order = await orderSvc.getByFilter({status: 'cooking'});
+            res.json({
+                result: order,
+                message: "List of cooking orders"
+            })
         }
         catch(except){
             next(except);
@@ -63,7 +80,7 @@ class OrderController{
             else{
                 const update = await orderSvc.updateOrderStatus(orderId, 'cooked');
                 res.json({
-                    result: response,
+                    result: update,
                     message: "Order is cooked"
                 })
             }
@@ -77,7 +94,7 @@ class OrderController{
         try{
             const order = await orderSvc.getByFilter({status: 'cooked'});
             res.json({
-                result: response,
+                result: order,
                 message: "List of cooked orders"
             })
         }
@@ -96,7 +113,7 @@ class OrderController{
             else{
                 const update = await orderSvc.updateOrderStatus(orderId, 'served');
                 res.json({
-                    result: response,
+                    result: update,
                     message: "Order is served"
                 })
             }
@@ -110,7 +127,7 @@ class OrderController{
         try{
             const order = await orderSvc.getByFilter({status: 'served'});
             res.json({
-                result: response,
+                result: order,
                 message: "List of served orders"
             })
         }
@@ -129,8 +146,8 @@ class OrderController{
             else{
                 const update = await orderSvc.updateOrderStatus(orderId, 'paid');
                 res.json({
-                    result: response,
-                    message: "Order is served"
+                    result: update,
+                    message: "Order completed"
                 })
             }
         }
@@ -143,7 +160,7 @@ class OrderController{
         try{
             const order = await orderSvc.getByFilter({status: 'paid'});
             res.json({
-                result: response,
+                result: order,
                 message: "List of paid orders"
             })
         }
@@ -152,21 +169,23 @@ class OrderController{
         }
     }
 
-    getOrderDetailById = async(req, res, next)=>{
+    getOrderDetailByCustomerId = async(req, res, next)=>{
         try{
             const filter = {
-                _id: req.params.orderId
-            }
-            if(req.authUser.role === 'customer'){
-                filter = {
-                    ...filter,
-                    customerId: req.authUser._id
-                }
+                customerId: req.params.customerId
             }
             const order = await orderSvc.getByFilter(filter);
+            let GrandTotal = order.reduce((acc, item)=>acc+item.amount, 0)
+            let VatAmt = order.reduce((acc, item)=>acc+item.VatAmt, 0)
+            let serviceCharge = order.reduce((acc, item)=>acc+item.serviceCharge, 0)
             res.json({
-                result: order,
-                message: "Requested order info is fetched",
+                result: {
+                    GrandTotal: GrandTotal,
+                    VatAmt: VatAmt,
+                    serviceCharge: serviceCharge,
+                    orders: order
+                },
+                message: "Requested user's orders info is fetched",
                 meta: null
             })
         }

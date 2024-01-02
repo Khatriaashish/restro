@@ -1,7 +1,6 @@
 class OrderRequest{
     transformSelection = (food, user, qty)=>{
         let order = {
-            billId: null,
             customerId: user._id,
             foodId: food._id,
             detail: {
@@ -10,12 +9,12 @@ class OrderRequest{
                 image: food.images[0]
             },
             qty: qty,
-            rate: food.afterDiscount,
             status: 'new',
-            VatAmt: 0.13*rate,
+            rate: food.afterDiscount,
+            VatAmt: 0.13*food.afterDiscount*qty,
             discount: food.discount,
-            serviceCharge: 100,
-            amount: qty*food.afterDiscount + 0.13*food.afterDiscount + 100,
+            serviceCharge: 0.05*food.afterDiscount*qty,
+            amount: qty*food.afterDiscount + 0.13*food.afterDiscount*qty + 0.05*food.afterDiscount*qty,
         }
 
         return order

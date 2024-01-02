@@ -15,33 +15,10 @@ class OrderService{
         }
     }
 
-    upsertOrder = async(existingOrder, updateBody)=>{
+    createOrder = async(order)=>{
         try{
-            let order = null;
-            if(existingOrder){
-                if((existingOrder.foodId).toString() === (updateBody.foodId).toString()){
-                    let qty = Number(existingOrder.qty) + Number(updateBody.qty)
-                    order = await OrderModel.findByIdAndUpdate({
-                         _id: existingOrder._id
-                        }, {$set: 
-                            {
-                                qty: qty
-                            }
-                        })
-                }
-                else{
-                    order = await OrderModel.findByIdAndUpdate({
-                        _id: existingOrder._id
-                    }, {
-                        $set: updateBody
-                    })
-                }
-            }
-            else{
-                order = new OrderModel(updateBody)
-                order = await order.save()
-            }
-            return order
+            let ord = new OrderModel(order);
+            return await ord.save();
         }
         catch(except){
             throw except;
