@@ -1,5 +1,4 @@
-> [!NOTE]
-> Working on it. Not completed
+
 # Restaurant Management System
 This is Node project on restaurant management system.
 
